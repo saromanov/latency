@@ -39,6 +39,9 @@ func (s *Latency) Start() error {
 	if err != nil {
 		return fmt.Errorf("Error starting TCP listener: %s", err)
 	}
+	if listener == nil {
+		return fmt.Errorf("listener is not defined")
+	}
 	s.listener = listener
 
 	return nil
