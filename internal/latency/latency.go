@@ -40,7 +40,7 @@ func (s *Latency) Start() error {
 		return fmt.Errorf("Error starting TCP listener: %s", err)
 	}
 	if listener == nil {
-		return fmt.Errorf("listener is not defined")
+		return fmt.Errorf("listener is not defined try it again")
 	}
 	s.listener = listener
 
