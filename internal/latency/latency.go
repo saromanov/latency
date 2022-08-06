@@ -1,6 +1,7 @@
 package latency
 
 import (
+	"context"
 	"fmt"
 	"net"
 )
@@ -44,5 +45,25 @@ func (s *Latency) Start() error {
 	}
 	s.listener = listener
 
+	ctx, cancel := context.WithCancel(context.Background())
+	if err := s.start(ctx, cancel); err != nil {
+		return err
+	}
+	return nil
+}
+
+// start provides starting of accepting loop
+func (s *Latency) start(ctx context.Context, cancel context.CancelFunc) error {
+	for {
+		conn, err := s.listener.AcceptTCP()
+		if err != nil {
+			return err
+		}
+
+		c := NewConnection(conn)
+		if err := c.Start(ctx); err != nil {
+			return err
+		}
+	}
 	return nil
 }
