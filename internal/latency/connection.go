@@ -6,8 +6,8 @@ import (
 )
 
 type Connection struct {
-	conn *net.TCPConn
-	bufferSize int
+	conn, writeConn *net.TCPConn
+	bufferSize      int
 }
 
 func NewConnection(conn *net.TCPConn) *Connection {
@@ -18,8 +18,15 @@ func NewConnection(conn *net.TCPConn) *Connection {
 
 func (c *Connection) Start(ctx context.Context) error {
 	buffer := make([]byte, c.bufferSize)
-		for {
-			
+	for {
+		data, err := c.conn.Read(buffer)
+		if err != nil {
+			return err
 		}
+		data, err = c.conn.Write(buffer[:data])
+		if err != nil {
+			return err
+		}
+	}
 	return nil
 }
