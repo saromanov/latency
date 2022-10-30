@@ -1,7 +1,10 @@
 package latency
 
+import "time"
+
 // Config defines configuration for latency project
 type Config struct {
-	Address string `yaml:"address"`
-	Port    int    `yaml:"port"`
+	Address string    `yaml:"address"`
+	Port    int       `yaml:"port"`
+	Latency time.Time `yaml:"latency"`
 }
