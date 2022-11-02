@@ -34,7 +34,7 @@ func (l *Latency) Init() error {
 	return nil
 }
 
-// Start provides starting of the Latency
+// Start provides starting of the Latency server and connect to
 func (s *Latency) Start() error {
 	listener, err := net.ListenTCP("tcp", s.tcpAddress)
 	if err != nil {
