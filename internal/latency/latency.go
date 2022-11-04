@@ -52,7 +52,7 @@ func (s *Latency) Start() error {
 	return nil
 }
 
-// start provides starting of accepting loop
+// start provides starting of accepting loop of connections
 func (s *Latency) start(ctx context.Context, cancel context.CancelFunc) error {
 	for {
 		conn, err := s.listener.AcceptTCP()
