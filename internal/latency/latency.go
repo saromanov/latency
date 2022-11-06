@@ -4,12 +4,15 @@ import (
 	"context"
 	"fmt"
 	"net"
+
+	"github.com/sirupsen/logrus"
 )
 
 type Latency struct {
 	cfg                         Config
 	tcpAddress, resolvedAddress *net.TCPAddr
 	listener                    *net.TCPListener
+	cancelFunc                  context.CancelFunc
 }
 
 // New provides definition of the Latency
@@ -20,7 +23,8 @@ func New(cfg Config) *Latency {
 }
 
 // Init provides initialization of Latency
-func (l *Latency) Init() error {
+func (l *Latency) Init(ctx context.Context) error {
+	log := logrus.WithContext(ctx)
 	tcpAddress, err := net.ResolveTCPAddr("tcp", fmt.Sprintf(":%d", l.cfg.Port))
 	if err != nil {
 		return fmt.Errorf("Error resolving local address: %s", err)
@@ -29,6 +33,7 @@ func (l *Latency) Init() error {
 	if err != nil {
 		return fmt.Errorf("Error resolving destination address: %s", err)
 	}
+	log.Info("Latency was initialized")
 	l.tcpAddress = tcpAddress
 	l.resolvedAddress = resolvedTCPAddress
 	return nil
@@ -49,6 +54,7 @@ func (s *Latency) Start() error {
 	if err := s.start(ctx, cancel); err != nil {
 		return err
 	}
+	s.cancelFunc = cancel
 	return nil
 }
 
@@ -65,5 +71,12 @@ func (s *Latency) start(ctx context.Context, cancel context.CancelFunc) error {
 			return err
 		}
 	}
+	return nil
+}
+
+func (s *Latency) Stop(ctx context.Context) error {
+	log := logrus.WithContext(ctx)
+	log.Info("Stopping of the Latency")
+	s.cancelFunc()
 	return nil
 }
