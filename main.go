@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"os"
 
 	"gopkg.in/alecthomas/kingpin.v2"
@@ -32,9 +33,11 @@ func main() {
 		panic(err)
 	}
 
+	ctx := context.Background()
+
 	l := latency.New(data)
 
-	if err := l.Init(); err != nil {
+	if err := l.Init(ctx); err != nil {
 		panic(err)
 	}
 }
