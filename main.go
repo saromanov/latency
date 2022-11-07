@@ -12,9 +12,11 @@ import (
 func parseArgs(args []string) (latency.Config, error) {
 	var app = kingpin.New("latency", "Proxy for simulating network latency")
 	var (
+		latencyDur = app.Flag("latency", "Duration for latency").Duration()
 		address = app.Flag("address", "Address of the host").Default("localhost").String()
 		destAddress = app.Flag("destAddress", "Address of the destanation host").String()
 		port = app.Flag("port", "Port").Default("8080").Int()
+		destPort = app.Flag("destPort", "DestPort").Int()
 	)
 
 	if _, err := app.Parse(args); err != nil {
@@ -25,6 +27,8 @@ func parseArgs(args []string) (latency.Config, error) {
 		Address: *address,
 		Port: *port,
 		DestAddress: *destAddress,
+		DestPort: *destPort,
+		Latency: *latencyDur,
 	}, nil
 }
 func main() {
