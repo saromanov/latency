@@ -73,7 +73,7 @@ func (s *Latency) start(ctx context.Context, cancel context.CancelFunc) error {
 	}
 	return nil
 }
-
+// stop poriding sriopping of Latency
 func (s *Latency) Stop(ctx context.Context) error {
 	log := logrus.WithContext(ctx)
 	log.Info("Stopping of the Latency")
