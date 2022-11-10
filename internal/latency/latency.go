@@ -29,7 +29,8 @@ func (l *Latency) Init(ctx context.Context) error {
 	if err != nil {
 		return fmt.Errorf("Error resolving local address: %s", err)
 	}
-	resolvedTCPAddress, err := net.ResolveTCPAddr("tcp", l.cfg.Address)
+	resolvedTCPAddress, err := net.ResolveTCPAddr("tcp", 
+	l.constructAddress(l.cfg.DestAddress, l.cfg.DestPort))
 	if err != nil {
 		return fmt.Errorf("Error resolving destination address: %s", err)
 	}
@@ -58,6 +59,19 @@ func (s *Latency) Start() error {
 	return nil
 }
 
+// stop providing stopping of Latency
+func (s *Latency) Stop(ctx context.Context) error {
+	log := logrus.WithContext(ctx)
+	log.Info("Stopping of the Latency")
+	s.cancelFunc()
+	return nil
+}
+
+// constructing address for resolving
+func (s *Latency) constructAddress(address string, port int) string {
+	return fmt.Sprintf("%s:%d", address, port)
+}
+
 // start provides starting of accepting loop of connections
 func (s *Latency) start(ctx context.Context, cancel context.CancelFunc) error {
 	for {
@@ -71,12 +85,5 @@ func (s *Latency) start(ctx context.Context, cancel context.CancelFunc) error {
 			return err
 		}
 	}
-	return nil
-}
-// stop poriding sriopping of Latency
-func (s *Latency) Stop(ctx context.Context) error {
-	log := logrus.WithContext(ctx)
-	log.Info("Stopping of the Latency")
-	s.cancelFunc()
 	return nil
 }
