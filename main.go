@@ -44,4 +44,8 @@ func main() {
 	if err := l.Init(ctx); err != nil {
 		panic(err)
 	}
+
+	if err := l.Start(ctx); err != nil {
+		panic(err)
+	}
 }

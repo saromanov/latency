@@ -41,7 +41,9 @@ func (l *Latency) Init(ctx context.Context) error {
 }
 
 // Start provides starting of the Latency server and connect to
-func (s *Latency) Start() error {
+func (s *Latency) Start(ctx context.Context) error {
+	log := logrus.WithContext(ctx)
+	log.Info("Starting of the Latency")
 	listener, err := net.ListenTCP("tcp", s.tcpAddress)
 	if err != nil {
 		return fmt.Errorf("Error starting TCP listener: %s", err)
