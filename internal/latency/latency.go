@@ -82,7 +82,7 @@ func (s *Latency) start(ctx context.Context, cancel context.CancelFunc) error {
 			return err
 		}
 
-		c := NewConnection(conn)
+		c := NewConnection(conn, s.resolvedAddress)
 		if err := c.Start(ctx); err != nil {
 			return err
 		}

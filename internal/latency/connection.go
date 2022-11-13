@@ -11,6 +11,7 @@ import (
 
 type Connection struct {
 	conn, writeConn *net.TCPConn
+	destAddress     *net.TCPAddr
 	bufferSize      int
 	done            chan error
 	delayedRequest  chan delayedRequest
@@ -21,9 +22,10 @@ type delayedRequest struct {
 	delay time.Duration
 }
 
-func NewConnection(conn *net.TCPConn) *Connection {
+func NewConnection(conn *net.TCPConn, destAddress *net.TCPAddr) *Connection {
 	return &Connection{
 		conn:           conn,
+		destAddress:    destAddress,
 		done:           make(chan error),
 		delayedRequest: make(chan delayedRequest),
 	}
@@ -31,6 +33,11 @@ func NewConnection(conn *net.TCPConn) *Connection {
 
 func (c *Connection) Start(ctx context.Context) error {
 	log := logrus.WithContext(ctx)
+	destConn, err := net.DialTCP("tcp", nil, c.destAddress)
+	if err != nil {
+		return fmt.Errorf("Error dialing remote address: %s", err)
+	}
+	c.writeConn = destConn
 	go c.readFromSrc(ctx)
 	for {
 		select {
@@ -80,7 +87,7 @@ func (c *Connection) readFromSrc(ctx context.Context) error {
 func (c *Connection) handleDelayedRequests(ctx context.Context) error {
 	log := logrus.WithContext(ctx)
 	for {
-		data := <- c.delayedRequest
+		data := <-c.delayedRequest
 		if data.delay.Seconds() == 0 {
 			log.Info("seconds is zero. There is not delay")
 		} else {
