@@ -41,6 +41,7 @@ func (l *Latency) Init(ctx context.Context) error {
 }
 
 // Start provides starting of the Latency server and connect to
+// servers
 func (s *Latency) Start(ctx context.Context) error {
 	log := logrus.WithContext(ctx)
 	log.Info("Starting of the Latency")
