@@ -39,6 +39,7 @@ func (c *Connection) Start(ctx context.Context) error {
 	}
 	c.writeConn = destConn
 	go c.readFromSrc(ctx)
+	go c.handleDelayedRequests(ctx)
 	for {
 		select {
 		case err := <-c.done:

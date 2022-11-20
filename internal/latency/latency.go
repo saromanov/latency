@@ -66,7 +66,9 @@ func (s *Latency) Start(ctx context.Context) error {
 func (s *Latency) Stop(ctx context.Context) error {
 	log := logrus.WithContext(ctx)
 	log.Info("Stopping of the Latency")
-	s.cancelFunc()
+	if s.cancelFunc != nil {
+		s.cancelFunc()
+	}
 	return nil
 }
 
