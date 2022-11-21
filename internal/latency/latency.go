@@ -77,8 +77,8 @@ func (s *Latency) constructAddress(address string, port int) string {
 	return fmt.Sprintf("%s:%d", address, port)
 }
 
-// start provides starting of accepting loop of connections to 
-func (s *Latency) start(ctx context.Context, cancel context.CanhostcelFunc) error {
+// start provides starting of accepting loop of connections to host 
+func (s *Latency) start(ctx context.Context, cancel context.CancelFunc) error {
 	for {
 		conn, err := s.listener.AcceptTCP()
 		if err != nil {
