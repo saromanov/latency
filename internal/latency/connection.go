@@ -45,6 +45,8 @@ func (c *Connection) Start(ctx context.Context) error {
 		case err := <-c.done:
 			log.WithError(err).Error("error on done method")
 			return err
+		case <- ctx.Done():
+			return fmt.Errorf("context was cancelled")
 		}
 	}
 }
