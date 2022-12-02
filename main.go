@@ -8,6 +8,13 @@ import (
 	"github.com/saromanov/latency/internal/latency"
 )
 
+func setDefaults(cfg latency.Config) latency.Config{
+	if cfg.BufferSize == 0 {
+		cfg.BufferSize = 100
+	}
+	return cfg
+}
+
 // parseArgs provides parsing of argumenys
 func parseArgs(args []string) (latency.Config, error) {
 	var app = kingpin.New("latency", "Proxy for simulating network latency")
@@ -23,13 +30,13 @@ func parseArgs(args []string) (latency.Config, error) {
 		return latency.Config{}, err
 	}
 
-	return latency.Config{
+	return setDefaults(latency.Config{
 		Address: *address,
 		Port: *port,
 		DestAddress: *destAddress,
 		DestPort: *destPort,
 		Latency: *latencyDur,
-	}, nil
+	}), nil
 }
 func main() {
 	data, err := parseArgs(os.Args[1:])

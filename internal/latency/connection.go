@@ -22,12 +22,13 @@ type delayedRequest struct {
 	delay time.Duration
 }
 
-func NewConnection(conn *net.TCPConn, destAddress *net.TCPAddr) *Connection {
+func NewConnection(conn *net.TCPConn, destAddress *net.TCPAddr, bufferSize int) *Connection {
 	return &Connection{
 		conn:           conn,
 		destAddress:    destAddress,
 		done:           make(chan error),
 		delayedRequest: make(chan delayedRequest),
+		bufferSize:     bufferSize,
 	}
 }
 
@@ -40,12 +41,13 @@ func (c *Connection) Start(ctx context.Context) error {
 	c.writeConn = destConn
 	go c.readFromSrc(ctx)
 	go c.handleDelayedRequests(ctx)
+	go c.handleDest(ctx)
 	for {
 		select {
 		case err := <-c.done:
 			log.WithError(err).Error("error on done method")
 			return err
-		case <- ctx.Done():
+		case <-ctx.Done():
 			return fmt.Errorf("context was cancelled")
 		}
 	}
@@ -55,7 +57,7 @@ func (c *Connection) Start(ctx context.Context) error {
 func (c *Connection) handleDest(ctx context.Context) error {
 	buffer := make([]byte, c.bufferSize)
 	for {
-		data, err := c.conn.Read(buffer)
+		data, err := c.writeConn.Read(buffer)
 		if err != nil {
 			return err
 		}
@@ -72,7 +74,7 @@ func (c *Connection) handleDest(ctx context.Context) error {
 func (c *Connection) readFromSrc(ctx context.Context) error {
 	for {
 		buffer := make([]byte, c.bufferSize)
-		data, err := c.writeConn.Read(buffer)
+		data, err := c.conn.Read(buffer)
 		if err != nil {
 			return err
 		}

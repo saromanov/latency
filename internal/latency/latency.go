@@ -85,7 +85,7 @@ func (s *Latency) start(ctx context.Context, cancel context.CancelFunc) error {
 			return err
 		}
 
-		c := NewConnection(conn, s.resolvedAddress)
+		c := NewConnection(conn, s.resolvedAddress, s.cfg.BufferSize)
 		if err := c.Start(ctx); err != nil {
 			return err
 		}
